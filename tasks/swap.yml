@@ -1,0 +1,6 @@
+---
+- name: Disable SWAP
+  ansible.builtin.command: sed -i '/ swap / s/^\(.*\)$/#\1/g' {{ fstab_path }}
+
+- name: Turn off the SWAP on the current session
+  ansible.builtin.command: swapoff -a

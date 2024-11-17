@@ -1,0 +1,18 @@
+# ---
+- name: Include configurate hosts file
+  ansible.builtin.import_tasks: hosts.yml
+
+- name: Include configurate loadbalancer network
+  ansible.builtin.import_tasks: network.yml
+  when: "'lb' in group_names"
+
+- name: Include configurate ufw
+  ansible.builtin.import_tasks: ufw.yml
+
+- name: Include disable SWAP
+  ansible.builtin.import_tasks: swap.yml
+  when: "'k3s' in group_names"
+
+- name: Include k3s Install
+  ansible.builtin.import_tasks: k3s.yml
+  when: "'k3s' in group_names"

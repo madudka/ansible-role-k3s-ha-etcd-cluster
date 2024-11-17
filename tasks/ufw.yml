@@ -1,0 +1,54 @@
+---
+- name: Check if ufw is installed
+  ansible.builtin.shell: 
+    cmd: dpkg -l | grep ufw
+  delegate_to: localhost
+  register: ufw_installed
+  ignore_errors: true
+  become: false
+
+- name: Configure firewall on load balancers
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop:
+    - { port: 80, proto: tcp }      #HTTP
+    - { port: 443, proto: tcp }     #HTTPS
+    - { port: 6443, proto: tcp }    #Kubernetes API server traffic
+  when: "ufw_installed.rc == 0 and 'lb' in group_names"
+  
+- name: Setup rules for pods and services
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ item }}"
+  loop:
+    - 10.42.0.0/16    #pods
+    - 10.43.0.0/16    #services
+  when: "ufw_installed.rc == 0 and 'k3s' in group_names"
+
+- name: Setup rules for master (servers) 
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 6443         #Servers K3s supervisor and Kubernetes API Server
+    - 2379:2380    #Required only for HA with embedded etcd
+  when: "ufw_installed.rc == 0 and 'master' in group_names"
+
+- name: Setup rules for all nodes (servers and agents)
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop:
+    - { port: 8472, proto: udp }     #Required only for Flannel VXLAN
+    - { port: 10250, proto: tcp }    #Kubelet traffic
+    - { port: 10251, proto: tcp }    #Kube-scheduler traffic
+    - { port: 10252, proto: tcp }    #Kube-controller-manager traffic
+    #- { port: 51820, proto: udp }    #Required only for Flannel Wireguard with IPv4
+    #- { port: 51821, proto: udp }    #Required only for Flannel Wireguard with IPv4
+    #- { port: 5001, proto: tcp }     #Required only for embedded distributed registry (Spegel)
+    #- { port: 6443, proto: tcp }     #Required only for embedded distributed registry (Spegel)
+  when: "ufw_installed.rc == 0 and 'k3s' in group_names"

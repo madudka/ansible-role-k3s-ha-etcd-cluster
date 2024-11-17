@@ -1,0 +1,16 @@
+#Hosts
+hosts_path: /etc/hosts
+
+#Network
+resolv_conf_path: /etc/resolv.conf
+sysctl_conf_path: /etc/sysctl.conf
+dns_servers: 
+- { server: nameserver, ip: 8.8.8.8 } 
+- { server: nameserver, ip: 1.1.1.1 }
+
+#Swap
+fstab_path: /etc/fstab
+
+#k3s
+k3s_node_token_path: /var/lib/rancher/k3s/server/node-token
+k3s_install_url: https://get.k3s.io
