@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: k3s_ha_etcd_cluster
   author: madudka
-  description: k3s high availability embedded etcd cluster debian installer.
+  description: k3s high availability embedded etcd cluster debian installer
   company: madudka.dev
   license: GPL-3.0-only
   min_ansible_version: 2.16.8
