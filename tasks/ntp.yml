@@ -1,0 +1,22 @@
+- name: Install ntp
+  ansible.builtin.apt:
+    name: ntp
+    state: present
+
+- name: Enable and start ntpd service
+  ansible.builtin.service:
+    name: ntpd
+    state: started
+    enabled: yes
+
+- name: Install ntpdate package
+  ansible.builtin.apt:
+    name: ntpdate
+    state: present
+  become: true
+
+- name: Synchronize time with NTP (ntpdate)
+  ansible.builtin.command: sudo ntpdate -u pool.ntp.org
+  retries: 3
+  delay: 5
+  check_mode: false

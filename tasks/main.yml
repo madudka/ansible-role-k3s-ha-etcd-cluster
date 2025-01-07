@@ -1,4 +1,7 @@
-# ---
+---
+- name: Include ntp synchronize
+  ansible.builtin.import_tasks: ntp.yml
+
 - name: Include configurate hosts file
   ansible.builtin.import_tasks: hosts.yml
 
