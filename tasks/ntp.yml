@@ -1,3 +1,4 @@
+---
 - name: Install ntp
   ansible.builtin.apt:
     name: ntp
